@@ -23,10 +23,10 @@ def get_info(latitude, longitude):
     country = rg.search([coordinates])[0]['country']
 
     if country not in valid_locations:
-        return None
+        return country, None, None
 
         # --- Get country facts ---
-    df = pd.read_csv("data/country_profile_variables.csv")
+    df = pd.read_csv("../data/country_profile_variables.csv")
 
     # rename population, gdp and area
     df['population'] = df['Population in thousands (2017)'] * 1000
@@ -43,7 +43,7 @@ def get_info(latitude, longitude):
     arr_facts = [population, gdp, area]
 
     # --- Get trends ---
-    df = pd.read_csv("data/TrendsByCountry.csv")
+    df = pd.read_csv("../data/TrendsByCountry.csv")
     trends = df[df['country'] == country][['trend1', 'trend2', 'trend3', 'trend4', 'trend5']]
 
     arr_trends = [trends.values[0][i] for i in range(5)]
