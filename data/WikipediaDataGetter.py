@@ -1,6 +1,4 @@
 import wikipedia
-import requests
-import bs4
 
 
 def get_data(country):
