@@ -21,7 +21,9 @@ valid_locations = {'Austria', 'Belgium', 'Czech Republic', 'Denmark', 'Finland',
 def get_info(latitude, longitude):
     coordinates = (latitude, longitude)
     country = rg.search([coordinates])[0]['country']
+
     code = rg.search([coordinates])[0]['country_code']  # for finding the flag
+    flag_url = "https://flagpedia.net/data/flags/normal/" + code.lower() + ".png"
 
     # hard code
     # Russian federation -> Russia
@@ -43,7 +45,7 @@ def get_info(latitude, longitude):
     arr_trends = get_country_trends(country)
 
     # return [country] + arr_facts + arr_trends     # if returning as a single array
-    return country, arr_facts, arr_trends
+    return country, arr_facts, arr_trends, flag_url
 
 
 def get_country_trends(country):
