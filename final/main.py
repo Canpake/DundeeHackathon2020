@@ -11,6 +11,8 @@ x = 0
 y = 0
 flag = None
 flag_url = "https://flagpedia.net/data/flags/normal/tg.png"
+flag_canvas = None
+pin_locations = []
 
 def motion(event):
     global x, y, flag_url
@@ -20,18 +22,20 @@ def motion(event):
 
     country, facts, trends, flag_url = country_info.get_info(lat, lon)
 
-    print(lat, lon)
-    print(country, facts, trends, flag_url)
+    # print(lat, lon)
+    # print(country, facts, trends, flag_url)
 
 
 def right_click(event):
     print("right click")
+    global pin_locations
+    pin_locations.append((event.x, event.y))
     # doesn't work, yikes
     # pin = ImageTk.PhotoImage(file="../images/pin.png")
     # pin_canvas = Canvas(root, bg="blue", width=80, height=120)
     # pin_canvas.create_image(event.x, event.y, image=pin)
     # pin_canvas.place(x=event.x, y=event.y)
-
+    #
     # pin_canvas = Canvas(root, width=80, height=120)
     # pin_canvas.place(x=100, y=100)
     #
@@ -54,10 +58,17 @@ def update():
             continue
         flag = current
 
-        # redraw map + flag
+        pin = ImageTk.PhotoImage(Image.open("../images/pin.png").resize((20, 30)))
+
+        # redraw map + flag + pins
         image_canvas.delete("all")
         image_canvas.create_image(0, 0, anchor=tkinter.NW, image=world_map)
-        image_canvas.create_image(x+30, y+15, anchor=tkinter.NW, image=flag)
+
+        global flag_canvas
+        flag_canvas = image_canvas.create_image(x+30, y+15, anchor=tkinter.NW, image=flag)
+        # draw each pin
+        for (pin_x, pin_y) in pin_locations:
+            image_canvas.create_image(pin_x, pin_y, anchor=tkinter.NW, image=pin)
         sleep(0.01)
 
 
