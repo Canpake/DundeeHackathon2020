@@ -32,17 +32,15 @@ y = 0
 def update():
     while True:
         global flag_url
-        print(flag_url + "caisucbnaisjnciajsnciasnc")
         response = requests.get(flag_url)
         img_data = response.content
         global flag
         try:
-            current = ImageTk.PhotoImage(Image.open(BytesIO(img_data)))
+            current = ImageTk.PhotoImage(Image.open(BytesIO(img_data)).resize((int(550/10), int(367/10)), Image.ANTIALIAS))
         except:
             continue
         flag = current
         canvas.delete("all")
-
         canvas.create_image(0, 0, anchor=tk.NW, image=img)
         canvas.create_image(x, y, anchor=tk.NW, image=flag)
         sleep(0.01)
