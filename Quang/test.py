@@ -4,8 +4,8 @@ from tkinter import Tk, Canvas, PhotoImage
 
 def motion(event):
     x, y = event.x, event.y
-    lon = (x - 137) * 344 / 977 - 166
-    lat = -(y) * 137 / 490 + 88
+    lon = (x-184) * 302 / 939 - 124
+    lat = -(y) * 180 / 609 + 90
     print(lat, lon)
 
 
