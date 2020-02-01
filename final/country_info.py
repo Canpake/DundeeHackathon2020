@@ -21,6 +21,7 @@ valid_locations = {'Austria', 'Belgium', 'Czech Republic', 'Denmark', 'Finland',
 def get_info(latitude, longitude):
     coordinates = (latitude, longitude)
     country = rg.search([coordinates])[0]['country']
+    code = rg.search([coordinates])[0]['country_code']  # for finding the flag
 
     # hard code
     # Russian federation -> Russia
@@ -76,7 +77,9 @@ def get_country_facts(country):
 
     return arr_facts
 
+
 # testing: Should give India
 # print(get_info(28.5, 77.2))
 # testing: Should return None
 # print(get_info(0, 0))
+print(rg.search([(57, -141)]))
