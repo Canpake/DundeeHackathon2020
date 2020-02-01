@@ -4,7 +4,7 @@ from pytrends.request import TrendReq
 
 trendRequester = TrendReq(hl='en-US', tz=360)
 
-file = open("data/TrendsByCountry.csv", "w")
+file = open("TrendsByCountry.csv", "w")
 print("This Program helps find trends associated with countries.")
 print("It will write the associated 5 trends to a CSV file.")
 countries = [
