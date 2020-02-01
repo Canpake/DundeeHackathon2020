@@ -60,6 +60,7 @@ countries = [
     "Papua New Guinea", "Samoa", "Solomon Islands", "Tonga", "Tuvalu", "Vanuatu"]
 
 
+file.write("country, trend1, trend2, trend3, trend4, trend5")
 all_trends = []
 for country in countries:
     try:
