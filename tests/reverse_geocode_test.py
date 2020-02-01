@@ -7,5 +7,6 @@ for x in range(100):
     coordinates = (lat, long)
     print(coordinates)
     print(rg.search([coordinates]))
+    print(rg.search([coordinates])[0]['country'])
 
 

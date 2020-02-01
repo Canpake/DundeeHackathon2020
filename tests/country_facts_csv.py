@@ -24,5 +24,7 @@ print(df[['country', 'population', 'gdp', 'area']])
 df = df[df['country'].isin(country)]
 print(df[['country', 'population', 'gdp', 'area']])
 
+print(country, len(country))
+
 # which countries are not shown compared to TrendsByCountry.csv?
 print(set(country) - set(df['country'].values))     # no taiwan :(
