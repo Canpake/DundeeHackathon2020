@@ -8,7 +8,6 @@ file = open("data/TrendsByCountry.csv", "w")
 print("This Program helps find trends associated with countries")
 countries = [
 
-    '''EUROPE'''
     "Albania", "Andorra", "Armenia", "Austria", "Azerbaijan", "Belarus", "Belgium", "Bosnia and Herzegovina",
     "Bulgaria"
     , "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Georgia", "Germany", "Greece",
@@ -19,7 +18,6 @@ countries = [
     "Serbia", "Slovakia", "Slovenia"
     , "Spain", "Sweden", "Switzerland", "Turkey", "Ukraine", "United Kingdom", "Vatican City"
 
-                                                                               '''ASIA'''
 
     , "Afghanistan", "Armenia", "Azerbaijan", "Bahrain", "Bangladesh", "Bhutan", "Brunei", "Cambodia", "China",
     "Cyprus", "Georgia", "India"
@@ -31,8 +29,6 @@ countries = [
     "United Arab Emirates", "Uzbekistan", "Vietnam"
     , "Yemen"
 
-      '''AFRICA'''
-
     , "Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroon",
     "Central African Republic", "Chad", "Comoros"
     , "Democratic Republic of the Congo", "Republic of the Congo", "Cote d'Ivoire", "Djibouti", "Egypt",
@@ -42,25 +38,21 @@ countries = [
     "Niger", "Nigeria", "Rwanda", "Sao Tome and Principe", "Senegal", "Seychelles", "Sierra Leone", "Somalia",
     "South Africa", "South Sudan", "Sudan", "Swaziland", "Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe"
 
-                                                                                                            '''NORTH AMERICA'''
 
     , "Antigua and Barbuda", "Bahamas", "Barbados", "Belize", "Canada", "Costa Rica", "Cuba", "Dominica",
     "Dominican Republic", "El Salvador", "Grenada", "Guatemala", "Haiti", "Honduras", "Jamaica", "Mexico", "Nicaragua",
     "Panama", "Saint Kitts and Nevis ", "Saint Lucia", "Saint Vincent and the Grenadines", "Trinidad and Tobago",
     "United States"
 
-    '''SOUTH AMERICA'''
-
     , "Argentina", "Bolivia", "Brazil", "Chile", "Colombia", "Ecuador", "Guyana", "Paraguay"
     , "Peru", "Suriname", "Uruguay", "Venezuela"
 
-                                     '''OCEANIA'''
 
     , "Australia", "Fiji", "Kiribati", "Marshall Islands", "Micronesia", "Nauru", "New Zealand", "Palau",
     "Papua New Guinea", "Samoa", "Solomon Islands", "Tonga", "Tuvalu", "Vanuatu"]
 
 
-file.write("country, trend1, trend2, trend3, trend4, trend5")
+file.write("country, trend1, trend2, trend3, trend4, trend5\n")
 all_trends = []
 for country in countries:
     try:
@@ -72,6 +64,8 @@ for country in countries:
         for trend in trends:
             i += 1
             trend_info = (trend[2:].strip())
+            if ',' in trend_info:
+                trend_info = "\"" +  trend_info + "\""
             if i < 5:
                 file.write(trend_info + ", ")
             else:
