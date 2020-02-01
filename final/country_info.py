@@ -22,35 +22,51 @@ def get_info(latitude, longitude):
     coordinates = (latitude, longitude)
     country = rg.search([coordinates])[0]['country']
 
-    if country not in valid_locations:
-        return country, None, None
+    # hard code
+    # russian federation -> russia
+    if country == "Russian Federation":
+        country = "Russia"
 
-        # --- Get country facts ---
+    # --- Get country facts ---
+    arr_facts = get_country_facts(country)
+
+    # --- Get trends ---
+    arr_trends = get_country_trends(country)
+
+    # return [country] + arr_facts + arr_trends     # if returning as a single array
+    return country, arr_facts, arr_trends
+
+
+def get_country_trends(country):
+    df = pd.read_csv("../data/TrendsByCountry.csv")
+    trends = df[df['country'] == country][['trend1', 'trend2', 'trend3', 'trend4', 'trend5']]
+
+    if len(trends) < 1:
+        return None
+
+    arr_trends = [trends.values[0][i] for i in range(5)]
+    return arr_trends
+
+
+def get_country_facts(country):
     df = pd.read_csv("../data/country_profile_variables.csv")
 
     # rename population, gdp and area
     df['population'] = df['Population in thousands (2017)'] * 1000
     df = df.rename(columns={'GDP: Gross domestic product (million current US$)': 'gdp', 'Surface area (km2)': 'area'})
-
     df.loc[df['gdp'] == -99, 'gdp'] = "N/A"  # rename negative GDP values
 
     facts = df[df['country'] == country]
 
+    if len(facts) < 1:
+        return None
+
     population = facts['population'].values[0]  # actual value
     gdp = str(facts['gdp'].values[0]) + " million ($US)"  # $US millions
     area = str(facts['area'].values[0]) + " km^2"  # km^2
-
     arr_facts = [population, gdp, area]
 
-    # --- Get trends ---
-    df = pd.read_csv("../data/TrendsByCountry.csv")
-    trends = df[df['country'] == country][['trend1', 'trend2', 'trend3', 'trend4', 'trend5']]
-
-    arr_trends = [trends.values[0][i] for i in range(5)]
-
-    # return [country] + arr_facts + arr_trends     # if returning as a single array
-    return country, arr_facts, arr_trends
-
+    return arr_facts
 
 # testing: Should give India
 # print(get_info(28.5, 77.2))
