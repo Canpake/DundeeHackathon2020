@@ -23,9 +23,17 @@ def get_info(latitude, longitude):
     country = rg.search([coordinates])[0]['country']
 
     # hard code
-    # russian federation -> russia
-    if country == "Russian Federation":
-        country = "Russia"
+    # Russian federation -> Russia
+    # Korea, Republic of -> South Korea
+    # Korea, Democratic People's Republic of -> North Korea
+    name_map = {
+        "Russian Federation": "Russia",
+        "Korea, Republic of": "South Korea",
+        "Korea, Democratic People's Republic of": "North Korea"
+    }
+
+    if country in name_map:
+        country = name_map[country]
 
     # --- Get country facts ---
     arr_facts = get_country_facts(country)
