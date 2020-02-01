@@ -1,12 +1,11 @@
 import numpy as np
-import geopy
-import reverse_geocoder
+import reverse_geocode as rg
 
 for x in range(100):
     lat = (np.random.random()-0.5)*180
     long = (np.random.random()-0.5)*360
     coordinates = (lat, long)
     print(coordinates)
-    print(reverse_geocoder.search([coordinates]))
+    print(rg.search([coordinates]))
 
 
