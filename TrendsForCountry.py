@@ -5,7 +5,8 @@ from pytrends.request import TrendReq
 trendRequester = TrendReq(hl='en-US', tz=360)
 
 file = open("data/TrendsByCountry.csv", "w")
-print("This Program helps find trends associated with countries")
+print("This Program helps find trends associated with countries.")
+print("It will write the associated 5 trends to a CSV file.")
 countries = [
 
     "Albania", "Andorra", "Armenia", "Austria", "Azerbaijan", "Belarus", "Belgium", "Bosnia and Herzegovina",
@@ -52,7 +53,7 @@ countries = [
     "Papua New Guinea", "Samoa", "Solomon Islands", "Tonga", "Tuvalu", "Vanuatu"]
 
 
-file.write("country, trend1, trend2, trend3, trend4, trend5\n")
+file.write("country,trend1,trend2,trend3,trend4,trend5\n")
 all_trends = []
 for country in countries:
     try:
@@ -60,14 +61,14 @@ for country in countries:
         trends = str(trendRequester.trending_searches(pn=country)).split('\n')
         trends = trends[1:6]
         i = 0
-        file.write(country.replace('_', " ").title() + ", ")
+        file.write(country.replace('_', " ").title() + ",")
         for trend in trends:
             i += 1
             trend_info = (trend[2:].strip())
             if ',' in trend_info:
                 trend_info = "\"" +  trend_info + "\""
             if i < 5:
-                file.write(trend_info + ", ")
+                file.write(trend_info + ",")
             else:
                 file.write(trend_info)
             all_trends.append(trend_info)
