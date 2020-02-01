@@ -17,12 +17,12 @@ canvas = tk.Canvas(root, width=1200, height=750)
 canvas.place(relx=0, rely=0)
 canvas.pack() # this makes it visible
 
-
-flag = ""
+# define a flag variable
+flag = None
 # Loads and create image (put the image in the folder)
 img = tk.PhotoImage(file="../images/world_map.png")
 image = canvas.create_image(0, 0, anchor=tk.NW, image=img)
-canvas.create_image(0, 0, anchor=tk.NW, image=flag)
+
 
 def motion(event):
     x, y = event.x, event.y
