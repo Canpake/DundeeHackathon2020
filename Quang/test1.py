@@ -1,51 +1,19 @@
-# move an Image on the canvas with tkinter
- 
-import tkinter as tk
+import tkinter
+from tkinter import Tk, Frame, Canvas, PhotoImage
+from final import country_info
 from PIL import ImageTk, Image
-import os
 import requests
 from io import BytesIO
-from final import country_info
 import threading
 from time import sleep
- 
-# Create the window with the Tk class
-root = tk.Tk()
-root.geometry("1200x519")
- 
-# Create the canvas and make it visible with pack()
-canvas = tk.Canvas(root, width=1200, height=750)
-canvas.place(relx=0, rely=0)
-canvas.pack() # this makes it visible
 
-# define a flag variable
-flag = None
-# Loads and create image (put the image in the folder)
-img = tk.PhotoImage(file="../images/world_map.png")
-image = canvas.create_image(0, 0, anchor=tk.NW, image=img)
-
-flag_url = "https://flagpedia.net/data/flags/normal/tg.png"
 x = 0
 y = 0
+flag = None
+flag_url = "https://flagpedia.net/data/flags/normal/tg.png"
+flag_canvas = None
+pin_locations = []
 
-
-def update():
-    while True:
-        global flag_url
-        print(flag_url + "caisucbnaisjnciajsnciasnc")
-        response = requests.get(flag_url)
-        img_data = response.content
-        global flag
-        try:
-            current = ImageTk.PhotoImage(Image.open(BytesIO(img_data)))
-        except:
-            continue
-        flag = current
-        canvas.delete("all")
-
-        canvas.create_image(0, 0, anchor=tk.NW, image=img)
-        canvas.create_image(x, y, anchor=tk.NW, image=flag)
-        sleep(0.01)
 
 def motion(event):
     global x, y, flag_url
@@ -53,21 +21,63 @@ def motion(event):
     lon = (x - 184) * 302 / 939 - 124
     lat = -(y) * 180 / 609 + 90
 
-    print(lat, lon)
-
     country, facts, trends, flag_url = country_info.get_info(lat, lon)
-    print(country, facts, trends, flag_url)
+
+    # print(lat, lon)
+    # print(country, facts, trends, flag_url)
 
 
+def right_click(event):
+    print("right click")
+    image_canvas.create_image(event.x, event.y, anchor=tkinter.NW, image=pin)
 
- 
-# This bind window to keys so that move is called when you press a key
 
+def update():
+    while True:
+        # set flag url
+        global flag_url
+        response = requests.get(flag_url)
+        img_data = response.content
+
+        # find flag image (and resize)
+        global flag
+        try:
+            current = ImageTk.PhotoImage(
+                Image.open(BytesIO(img_data)).resize((int(550 / 10), int(367 / 10)), Image.ANTIALIAS))
+        except:
+            continue
+        flag = current
+
+        # redraw map + flag + pins
+
+        global flag_canvas
+        image_canvas.delete(flag_canvas)
+        flag_canvas = image_canvas.create_image(x + 30, y + 15, anchor=tkinter.NW, image=flag)
+        # draw each pin
+
+        sleep(0.01)
+
+
+root = Tk()
+root.geometry("1186x609")
+
+# set up canvas + load initial images
+image_canvas = Canvas(root, bg="blue", width=1186, height=609)
+image_canvas.place(relx=0, rely=0)
+world_map = ImageTk.PhotoImage(Image.open("../images/world_map.png"))
+pin = ImageTk.PhotoImage(Image.open("../images/pin.png").resize((20, 30)))
+
+image_canvas.create_image(593, 304, image=world_map)
+
+# bind actions
 root.bind('<Motion>', motion)
+root.bind("<Button-2>", right_click)
 
+# multithreading on flag loading
 threads = []
 a = threading.Thread(target=update)
 threads.append(a)
 a.start()
-# this creates the loop that makes the window stay 'active'
+
 root.mainloop()
+
