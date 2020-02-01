@@ -1,4 +1,5 @@
 import arcade
+from final import country_info
 
 SCREEN_WIDTH = 1186
 SCREEN_HEIGHT = 609
@@ -20,7 +21,11 @@ class MyGame(arcade.Window):
         arcade.set_background_color(arcade.color.AMAZON)
 
         # If you have sprite lists, you should create them here, and set them to None
-        self.background = None
+
+        # Additional attributes
+        self.background = None  # background texture
+        self.country = None     # country on mouseover
+        self.flag_url = None    # country flag on mouseover
 
     def setup(self):
         # Create your sprites and sprite lists here
@@ -35,7 +40,11 @@ class MyGame(arcade.Window):
         arcade.start_render()
 
         # Call draw() on all your sprite lists below
+        # background
         arcade.draw_xywh_rectangle_textured(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
+
+        # text
+        arcade.draw_text(self.country, 20, 20, arcade.color.BLACK, 14)
 
     def on_update(self, delta_time):
         """
@@ -64,7 +73,20 @@ class MyGame(arcade.Window):
         """
         Called whenever the mouse moves.
         """
-        pass
+        # converts x,y position on the screen into map coordinates, more or less
+        def convert_coordinates(x, y):
+            # latitude: 0:605 to -90:90
+            lat = (y - 302)/302 * 90
+            # longitude: 0:1186 to -180:180
+            long = (x - 593)/593 * 180
+            return lat, long
+
+        # report on positions
+        lat, long = convert_coordinates(x, y)   # a bit inaccurate but oh well
+
+        # use latitude and longitude to get country + information
+        self.country, facts, trends, self.flag_url = country_info.get_info(lat, long)
+        print(self.country)
 
     def on_mouse_press(self, x, y, button, key_modifiers):
         """
