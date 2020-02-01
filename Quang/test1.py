@@ -6,7 +6,8 @@ import os
 import requests
 from io import BytesIO
 from final import country_info
-
+import threading
+from time import sleep
  
 # Create the window with the Tk class
 root = tk.Tk()
@@ -23,29 +24,50 @@ flag = None
 img = tk.PhotoImage(file="../images/world_map.png")
 image = canvas.create_image(0, 0, anchor=tk.NW, image=img)
 
+flag_url = "https://flagpedia.net/data/flags/normal/tg.png"
+x = 0
+y = 0
+
+
+def update():
+    while True:
+        global flag_url
+        print(flag_url + "caisucbnaisjnciajsnciasnc")
+        response = requests.get(flag_url)
+        img_data = response.content
+        global flag
+        try:
+            current = ImageTk.PhotoImage(Image.open(BytesIO(img_data)))
+        except:
+            continue
+        flag = current
+        canvas.delete("all")
+
+        canvas.create_image(0, 0, anchor=tk.NW, image=img)
+        canvas.create_image(x, y, anchor=tk.NW, image=flag)
+        sleep(0.01)
 
 def motion(event):
+    global x, y, flag_url
     x, y = event.x, event.y
-    lon = (x - 137) * 344 / 977 - 166
-    lat = -(y) * 137 / 490 + 88
+    lon = (x - 184) * 302 / 939 - 124
+    lat = -(y) * 180 / 609 + 90
+
     print(lat, lon)
-    canvas.delete("all")
 
     country, facts, trends, flag_url = country_info.get_info(lat, lon)
     print(country, facts, trends, flag_url)
 
-    response = requests.get(flag_url)
-    img_data = response.content
-    global flag
-    flag = ImageTk.PhotoImage(Image.open(BytesIO(img_data)))
 
-    canvas.create_image(0,0,anchor=tk.NW, image=img)
-    canvas.create_image(x,y,anchor=tk.NW, image=flag)
 
  
 # This bind window to keys so that move is called when you press a key
 
 root.bind('<Motion>', motion)
- 
+
+threads = []
+a = threading.Thread(target=update)
+threads.append(a)
+a.start()
 # this creates the loop that makes the window stay 'active'
 root.mainloop()
