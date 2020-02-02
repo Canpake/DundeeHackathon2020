@@ -70,7 +70,7 @@ def get_country_facts(country):
     facts = df[df['country'] == country]
 
     if len(facts) < 1:
-        return None
+        return []
 
     population = facts['population'].values[0]  # actual value
     gdp = str(facts['gdp'].values[0]) + " million ($US)"  # $US millions
