@@ -25,7 +25,6 @@ def get_info(latitude, longitude):
     code = rg.search([coordinates])[0]['country_code']  # for finding the flag
     flag_url = "https://flagpedia.net/data/flags/normal/" + code.lower() + ".png"
 
-    # hard code
     # Russian federation -> Russia
     # Korea, Republic of -> South Korea
     # Korea, Democratic People's Republic of -> North Korea
@@ -81,9 +80,3 @@ def get_country_facts(country):
 
     return arr_facts
 
-
-# testing: Should give India
-# print(get_info(28.5, 77.2))
-# testing: Should return None
-# print(get_info(0, 0))
-# print(rg.search([(57, -141)]))
