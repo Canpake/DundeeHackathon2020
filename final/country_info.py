@@ -76,7 +76,7 @@ def get_country_facts(country):
     gdp = str(facts['gdp'].values[0])
     if gdp != "N/A":
         gdp += " million (USD)"     # $US millions
-    area = str(facts['area'].values[0]) + " km^2"  # km^2
+    area = str(facts['area'].values[0]) + " square km"  # km^2
     arr_facts = [population, gdp, area]
 
     return arr_facts
