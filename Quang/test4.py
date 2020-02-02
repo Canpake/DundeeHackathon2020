@@ -75,7 +75,6 @@ def update():
         # redraw text
         image_canvas.itemconfigure(country_text, anchor=tkinter.SW, text=country)
 
-        # text_to_display = "Statistics:\n\n"
         text_to_display = ""
         try:
             order_of_stats = ["Population: ", "GDP: ", "Area: "]
@@ -133,20 +132,19 @@ def update_progress_bar(population, gdp, area):
     try:
         population = int(population)
         population_bar = image_canvas.create_rectangle(10, 460*(1 - population/1409517000) + 10, 30, 470, fill='red')
-    except:
+    except TypeError:
         population_bar = image_canvas.create_rectangle(10, 470, 30, 470, fill='red')
     try:
         gdp = int(gdp)
         gdp_bar = image_canvas.create_rectangle(40, 460*(1 - gdp/18036648) + 10, 60, 470, fill='blue')
-    except:
+    except TypeError:
         gdp_bar = image_canvas.create_rectangle(40, 470, 60, 470, fill='blue')
     try:
         area = int(area)
         area_bar = image_canvas.create_rectangle(70, 460*(1 - area/17098246) + 10, 90, 470, fill='green')
-    except:
+    except TypeError:
         area_bar = image_canvas.create_rectangle(70, 470 + 10, 90, 470, fill='green')
 
-update_progress_bar(400,400,400)
 
 # bind actions
 root.bind('<Motion>', motion)
