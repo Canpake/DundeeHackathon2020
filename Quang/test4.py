@@ -32,10 +32,6 @@ def motion(event):
 
     country, facts, trends, flag_url = country_info.get_info(lat, lon)
 
-    # debug
-    # print(lat, lon)
-    # print(country, facts, trends, flag_url)
-
 
 def right_click(event):
     # draw a pin at the clicked location
@@ -79,19 +75,17 @@ def update():
         # redraw text
         image_canvas.itemconfigure(country_text, anchor=tkinter.SW, text=country)
 
-        # text_to_display = "Statistics:\n\n"
         text_to_display = ""
         try:
             order_of_stats = ["Population: ", "GDP: ", "Area: "]
             for i in range(len(facts)):
                 text_to_display = text_to_display + order_of_stats[i] + str(facts[i]) + "\n"
-                # print("Text to display ", text_to_display)
             image_canvas.itemconfigure(country_stats, anchor=tkinter.NW, text=text_to_display)
         except TypeError:
             continue
         try:
             if len(facts) == 3:
-                update_progress_bar(int(facts[0]), int(facts[1].split()[0]), int(facts[2].split(" ")[0]))
+                update_progress_bar(facts[0], facts[1].split()[0], facts[2].split(" ")[0])
             else:
                 update_progress_bar(0,0,0)
         except ValueError:
@@ -135,11 +129,22 @@ def update_progress_bar(population, gdp, area):
     image_canvas.delete(population_bar)
     image_canvas.delete(gdp_bar)
     image_canvas.delete(area_bar)
-    population_bar = image_canvas.create_rectangle(10, 460*(1 - population/1409517000) + 10, 30, 470, fill='red')
-    gdp_bar = image_canvas.create_rectangle(40, 460*(1 - gdp/18036648) + 10, 60, 470, fill='blue')
-    area_bar = image_canvas.create_rectangle(70, 460*(1 - area/17098246) + 10, 90, 470, fill='green')
+    try:
+        population = int(population)
+        population_bar = image_canvas.create_rectangle(10, 460*(1 - population/1409517000) + 10, 30, 470, fill='red')
+    except TypeError:
+        population_bar = image_canvas.create_rectangle(10, 470, 30, 470, fill='red')
+    try:
+        gdp = int(gdp)
+        gdp_bar = image_canvas.create_rectangle(40, 460*(1 - gdp/18036648) + 10, 60, 470, fill='blue')
+    except TypeError:
+        gdp_bar = image_canvas.create_rectangle(40, 470, 60, 470, fill='blue')
+    try:
+        area = int(area)
+        area_bar = image_canvas.create_rectangle(70, 460*(1 - area/17098246) + 10, 90, 470, fill='green')
+    except TypeError:
+        area_bar = image_canvas.create_rectangle(70, 470 + 10, 90, 470, fill='green')
 
-update_progress_bar(400,400,400)
 
 # bind actions
 root.bind('<Motion>', motion)
