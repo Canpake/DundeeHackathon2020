@@ -35,6 +35,9 @@ def motion(event):
     # print(lat, lon)
     # print(country, facts, trends, flag_url)
 
+def left_click(event):
+    pass
+
 
 def right_click(event):
     # draw a pin at the clicked location
@@ -68,8 +71,8 @@ def update():
             width, height = Image.open(BytesIO(img_data)).size
             flag_image = ImageTk.PhotoImage(Image.open(BytesIO(img_data)).resize((int(width*FLAG_SCALE), int(height*FLAG_SCALE)), Image.ANTIALIAS))
         except PIL.UnidentifiedImageError:
-            # hard-coded resize; no_flag is 550x275px.
-            flag_image = ImageTk.PhotoImage(Image.open("../images/no_flag.png").resize((int(550*FLAG_SCALE), int(275*FLAG_SCALE))))
+            # hard-coded resize; no_flag is 550x350px.
+            flag_image = ImageTk.PhotoImage(Image.open("../images/no_flag.png").resize((int(550*FLAG_SCALE), int(350*FLAG_SCALE))))
 
         # redraw flag at cursor location
         image_canvas.delete(flag)
@@ -119,6 +122,7 @@ country_stats = image_canvas.create_text(10, 520, width=300, font=('Courier', 16
 
 # bind actions
 root.bind('<Motion>', motion)
+root.bind('<Button-1>', left_click)
 root.bind("<Button-2>", right_click)
 
 # multithreading on flag loading
