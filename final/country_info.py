@@ -73,7 +73,7 @@ def get_country_facts(country):
         return []
 
     population = facts['population'].values[0]  # actual value
-    gdp = str(facts['gdp'].values[0]) + " million ($US)"  # $US millions
+    gdp = str(facts['gdp'].values[0]) + " million (USD)"  # $US millions
     area = str(facts['area'].values[0]) + " km^2"  # km^2
     arr_facts = [population, gdp, area]
 

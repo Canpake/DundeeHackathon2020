@@ -16,14 +16,15 @@ FLAG_OFFSET = (30, 15)
 
 x = 0
 y = 0
+country = None
 flag = None
 flag_url = "https://flagpedia.net/data/flags/normal/tg.png"     # default value for flag to begin with
 flag_image = None
 flag_update = True   # boolean flag for whether to update the flag
-
+facts = []
 
 def motion(event):
-    global x, y, flag_url
+    global x, y, country, facts, flag_url
     x, y = event.x, event.y
     lon = (x - 184) * 302 / 939 - 124
     lat = -(y) * 180 / 609 + 90
@@ -54,10 +55,11 @@ def right_click(event):
     pin_button.place(x=event.x+10, y=event.y+40)
 
 
+# updates on flag + country information
 def update():
     while flag_update:
         # find flag image from url
-        global flag, flag_url, flag_image
+        global country, flag, flag_url, flag_image, facts
         response = requests.get(flag_url)
         img_data = response.content
 
@@ -72,6 +74,20 @@ def update():
         # redraw flag at cursor location
         image_canvas.delete(flag)
         flag = image_canvas.create_image(x+FLAG_OFFSET[0], y+FLAG_OFFSET[1], anchor=tkinter.NW, image=flag_image)
+
+        # redraw text
+        image_canvas.itemconfigure(country_text, anchor=tkinter.SW, text=country)
+
+        # text_to_display = "Statistics:\n\n"
+        text_to_display = ""
+        try:
+            order_of_stats = ["Population: ", "GDP: ", "Area: "]
+            for i in range(len(facts)):
+                text_to_display = text_to_display + order_of_stats[i] + str(facts[i]) + "\n"
+                # print("Text to display ", text_to_display)
+            image_canvas.itemconfigure(country_stats, anchor=tkinter.NW, text=text_to_display)
+        except ValueError:
+            continue
 
         sleep(0.01)
     return
@@ -96,6 +112,10 @@ pin = ImageTk.PhotoImage(Image.open("../images/pin.png").resize((20, 30)))
 
 # draw map
 image_canvas.create_image(593, 304, image=world_map)
+
+# draw text
+country_text = image_canvas.create_text(10, 520, width=300, font=('Courier', 20, 'bold'))
+country_stats = image_canvas.create_text(10, 520, width=300, font=('Courier', 16))
 
 # bind actions
 root.bind('<Motion>', motion)
