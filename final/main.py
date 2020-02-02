@@ -24,6 +24,8 @@ flag_image = None
 flag_update = True  # boolean flag for whether to update the flag
 facts = []
 current_country = None
+pins = []
+pin_labels = []
 
 
 def motion(event):
@@ -61,7 +63,7 @@ def left_click(event):
 
 def right_click(event):
     # draw a pin at the clicked location
-    pin_image = image_canvas.create_image(event.x, event.y, image=pin)
+    pin_image = image_canvas.create_image(event.x, event.y, image=pin_img)
 
     # prompt for user entry to add text associated with the pin
     def set_pin_text():
@@ -70,6 +72,13 @@ def right_click(event):
             pin_label.place(x=event.x, y=event.y + 20)
             pin_entry.place_forget()
             pin_button.place_forget()
+
+            # for i in range(0, 10):
+            #     image_canvas.move(pin_image, 0, 1)
+
+            # add to list of pins and pin_labels (for later removal)
+            pins.append(pin_image)
+            pin_labels.append(pin_label)
         else:   # if pin text is empty, then delete the pin and don't place a label
             image_canvas.delete(pin_image)
             pin_entry.place_forget()
@@ -81,6 +90,19 @@ def right_click(event):
 
     pin_button = Button(image_canvas, text="set", width=6, command=set_pin_text)
     pin_button.place(x=event.x + 10, y=event.y + 40)
+
+
+def reset_pins():
+    global pins, pin_labels
+    # .delete() on pins, .destroy() on labels
+    for pin in pins:
+        image_canvas.delete(pin)
+    for label in pin_labels:
+        label.destroy()
+
+    # reset lists
+    pins = []
+    pin_labels = []
 
 
 # updates on flag + country information
@@ -160,7 +182,7 @@ image_canvas.place(relx=0, rely=0)
 
 # load up initial images
 world_map = ImageTk.PhotoImage(Image.open("../images/world_map.png"))
-pin = ImageTk.PhotoImage(Image.open("../images/pin.png").resize((20, 30)))
+pin_img = ImageTk.PhotoImage(Image.open("../images/pin.png").resize((20, 30)))
 
 # draw map
 image_canvas.create_image(593, 304, image=world_map)
@@ -193,6 +215,10 @@ area_bar = image_canvas.create_rectangle(300, 500, 700, 540, fill='red')
 image_canvas.create_text(20, 485, width=30, font=('Courier', 16, 'bold'), text="P")
 image_canvas.create_text(50, 485, width=30, font=('Courier', 16, 'bold'), text="G")
 image_canvas.create_text(80, 485, width=30, font=('Courier', 16, 'bold'), text="A")
+
+# add pin reset button
+pin_reset = Button(root, text='Reset Pins', width='9', command=reset_pins)
+pin_reset.place(x=1176, y=10, anchor=tkinter.NE)
 
 # bind actions
 root.bind('<Motion>', motion)
