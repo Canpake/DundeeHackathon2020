@@ -165,23 +165,34 @@ pin = ImageTk.PhotoImage(Image.open("../images/pin.png").resize((20, 30)))
 # draw map
 image_canvas.create_image(593, 304, image=world_map)
 
+# draw rectangles around text
+# rects = []  # list of rectangles
+# def create_rectangle(x1, y1, x2, y2, **kwargs):
+#     if 'alpha' in kwargs:
+#         alpha = int(kwargs.pop('alpha') * 255)
+#         fill = kwargs.pop('fill')
+#         fill = root.winfo_rgb(fill) + (alpha,)
+#         rect = Image.new('RGBA', (x2-x1, y2-y1), fill)
+#         rects.append(ImageTk.PhotoImage(rect))
+#         image_canvas.create_image(x1, y1, image=rects[-1], anchor='nw')
+#     image_canvas.create_rectangle(x1, y1, x2, y2, **kwargs)
+#
+# create_rectangle(340, 495, 1000, 600, outline='black', width='2', fill='white', alpha=0.4)
+
 # draw text
 country_text = image_canvas.create_text(10, 540, width=300, font=('Courier', 20, 'bold'))
 country_stats = image_canvas.create_text(10, 540, width=300, font=('Courier', 16))
-country_wikipedia = image_canvas.create_text(350, 550, width=610, font=('Courier', 10))
-country_trends = image_canvas.create_text(410, 220, width=200, font=("Courier", 12))
-
-# # draw rectangles around text
-# image_canvas.create_rectangle(350, 500, 1000, 600,
-#     outline='black', width="2"
-#     fill='gray',  # still needed or stipple won't work
-#     stipple='gray25',
-# )
+country_wikipedia = image_canvas.create_text(450, 540, width=610, font=('Courier', 10))
+country_trends = image_canvas.create_text(150, 500, width=200, font=("Courier", 14))
 
 # draw initial info bars
 population_bar = image_canvas.create_rectangle(300, 400, 700, 440, fill='red')
 gdp_bar = image_canvas.create_rectangle(300, 450, 700, 490, fill='red')
 area_bar = image_canvas.create_rectangle(300, 500, 700, 540, fill='red')
+# draw text under info bars
+image_canvas.create_text(20, 485, width=30, font=('Courier', 16, 'bold'), text="P")
+image_canvas.create_text(50, 485, width=30, font=('Courier', 16, 'bold'), text="G")
+image_canvas.create_text(80, 485, width=30, font=('Courier', 16, 'bold'), text="A")
 
 # bind actions
 root.bind('<Motion>', motion)
