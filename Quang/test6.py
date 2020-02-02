@@ -11,7 +11,6 @@ from time import sleep
 import sys
 import wikipedia
 
-
 # Constants for flag display
 FLAG_SCALE = 0.1
 FLAG_OFFSET = (30, 15)
@@ -29,27 +28,9 @@ def motion(event):
     global x, y, country, facts, flag_url
     x, y = event.x, event.y
     lon = (x - 184) * 302 / 939 - 124
-    lat = -(y) * 180 / 609 + 90
+    lat = -y * 180 / 609 + 90
 
     country, facts, trends, flag_url = country_info.get_info(lat, lon)
-
-def right_click(event):
-    # draw a pin at the clicked location
-    image_canvas.create_image(event.x, event.y, image=pin)
-
-    # prompt for user entry to add text associated with the pin
-    def set_pin_text():
-        pin_label = Label(image_canvas, text=pin_entry.get(), bg='gray')
-        pin_label.place(x=event.x, y=event.y+20)
-        pin_entry.place_forget()
-        pin_button.place_forget()
-
-    # set entry + button
-    pin_entry = Entry(image_canvas)
-    pin_entry.place(x=event.x+10, y=event.y+10)
-
-    pin_button = Button(image_canvas, text="set", width=6, command=set_pin_text)
-    pin_button.place(x=event.x+10, y=event.y+40)
 
 
 current_wikipedia = ""
@@ -160,7 +141,6 @@ def update_progress_bar(population, gdp, area):
 
 # bind actions
 root.bind('<Motion>', motion)
-root.bind("<Button-2>", right_click)
 root.bind('<Button-1>', left_click)
 
 # multithreading on flag loading
