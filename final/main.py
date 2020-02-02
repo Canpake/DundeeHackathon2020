@@ -19,7 +19,7 @@ y = 0
 country = None
 flag = None
 trends = None
-flag_url = "https://flagpedia.net/data/flags/normal/tg.png"  # default value for flag to begin with
+flag_url = ""  # default value for flag to begin with
 flag_image = None
 flag_update = True  # boolean flag for whether to update the flag
 facts = []
@@ -48,17 +48,20 @@ def left_click(event):
         current_country = None
         image_canvas.itemconfigure(country_trends, anchor=tkinter.SW, text="")
         image_canvas.itemconfigure(country_wikipedia, anchor=tkinter.SW, text="")
-    elif trends is not None and len(trends) > 0:
-        # get trend text
-        trend_text = "Trends\n\n"
-        for i in range(len(trends)):
-            trend_text += (trends[i] + '\n')
-        # get wikipedia text
+    else:
+        # update wikipedia text
         current_country = country
         sentences = str(wikipedia.summary(country, sentences=3))
-
-        image_canvas.itemconfigure(country_trends, anchor=tkinter.SW, text=trend_text)
         image_canvas.itemconfigure(country_wikipedia, anchor=tkinter.SW, text=sentences)
+
+        if trends is not None and len(trends) > 0:
+            # update trend text
+            trend_text = "Trends\n\n"
+            for i in range(len(trends)):
+                trend_text += (trends[i] + '\n')
+            image_canvas.itemconfigure(country_trends, anchor=tkinter.SW, text=trend_text)
+        else:
+            image_canvas.itemconfigure(country_trends, anchor=tkinter.SW, text="")
 
 
 def right_click(event):
@@ -110,16 +113,16 @@ def update():
     while flag_update:
         # find flag image from url
         global country, flag, flag_url, flag_image, facts
-        response = requests.get(flag_url)
-        img_data = response.content
 
         try:
+            response = requests.get(flag_url)
+            img_data = response.content
             # get image size + resize
             width, height = Image.open(BytesIO(img_data)).size
             flag_image = ImageTk.PhotoImage(
                 Image.open(BytesIO(img_data)).resize((int(width * FLAG_SCALE), int(height * FLAG_SCALE)),
                                                      Image.ANTIALIAS))
-        except PIL.UnidentifiedImageError:
+        except (PIL.UnidentifiedImageError, requests.exceptions.MissingSchema):
             # hard-coded resize; no_flag is 550x350px.
             flag_image = ImageTk.PhotoImage(
                 Image.open("../images/no_flag.png").resize((int(550 * FLAG_SCALE), int(350 * FLAG_SCALE))))
@@ -208,9 +211,9 @@ country_wikipedia = image_canvas.create_text(450, 540, width=610, font=('Courier
 country_trends = image_canvas.create_text(150, 500, width=200, font=("Courier", 14))
 
 # draw initial info bars
-population_bar = image_canvas.create_rectangle(300, 400, 700, 440, fill='red')
-gdp_bar = image_canvas.create_rectangle(300, 450, 700, 490, fill='red')
-area_bar = image_canvas.create_rectangle(300, 500, 700, 540, fill='red')
+population_bar = image_canvas.create_rectangle(0, 0, 0, 0, fill='red')
+gdp_bar = image_canvas.create_rectangle(0, 0, 0, 0, fill='red')
+area_bar = image_canvas.create_rectangle(0, 0, 0, 0, fill='red')
 # draw text under info bars
 image_canvas.create_text(20, 485, width=30, font=('Courier', 16, 'bold'), text="P")
 image_canvas.create_text(50, 485, width=30, font=('Courier', 16, 'bold'), text="G")
