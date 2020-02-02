@@ -8,6 +8,7 @@ from io import BytesIO
 import threading
 from time import sleep
 import sys
+import wikipedia
 
 
 # Constants for flag display
@@ -22,6 +23,8 @@ flag_url = "https://flagpedia.net/data/flags/normal/tg.png"     # default value 
 flag_image = None
 flag_update = True   # boolean flag for whether to update the flag
 facts = []
+current_wikipedia = None
+
 
 def motion(event):
     global x, y, country, facts, flag_url
@@ -35,8 +38,16 @@ def motion(event):
     # print(lat, lon)
     # print(country, facts, trends, flag_url)
 
+
 def left_click(event):
-    pass
+    global current_wikipedia
+    if country == current_wikipedia:
+        current_wikipedia = None
+        image_canvas.itemconfigure(country_wikipedia, anchor=tkinter.NW, text="")
+    else:
+        current_wikipedia = country
+        sentences = str(wikipedia.summary(country, sentences=3))
+        image_canvas.itemconfigure(country_wikipedia, anchor=tkinter.NW, text=sentences)
 
 
 def right_click(event):
@@ -78,10 +89,10 @@ def update():
         image_canvas.delete(flag)
         flag = image_canvas.create_image(x+FLAG_OFFSET[0], y+FLAG_OFFSET[1], anchor=tkinter.NW, image=flag_image)
 
-        # redraw text
+        # redraw country text
         image_canvas.itemconfigure(country_text, anchor=tkinter.SW, text=country)
 
-        # text_to_display = "Statistics:\n\n"
+        # redraw country information
         text_to_display = ""
         try:
             order_of_stats = ["Population: ", "GDP: ", "Area: "]
@@ -92,8 +103,29 @@ def update():
         except ValueError:
             continue
 
+        # redraw population bars
+        try:
+            if len(facts) == 3:
+                update_progress_bar(int(facts[0]), int(facts[1].split()[0]), int(facts[2].split(" ")[0]))
+            else:
+                update_progress_bar(0,0,0)
+        except ValueError:
+            update_progress_bar(0,0,0)
+            continue
+
         sleep(0.01)
     return
+
+
+# updates on information bars
+def update_progress_bar(population, gdp, area):
+    global population_bar, gdp_bar, area_bar
+    image_canvas.delete(population_bar)
+    image_canvas.delete(gdp_bar)
+    image_canvas.delete(area_bar)
+    population_bar = image_canvas.create_rectangle(10, 460*(1 - population/1409517000) + 10, 30, 470, fill='red')
+    gdp_bar = image_canvas.create_rectangle(40, 460*(1 - gdp/18036648) + 10, 60, 470, fill='blue')
+    area_bar = image_canvas.create_rectangle(70, 460*(1 - area/17098246) + 10, 90, 470, fill='green')
 
 
 def on_closing():
@@ -119,6 +151,12 @@ image_canvas.create_image(593, 304, image=world_map)
 # draw text
 country_text = image_canvas.create_text(10, 520, width=300, font=('Courier', 20, 'bold'))
 country_stats = image_canvas.create_text(10, 520, width=300, font=('Courier', 16))
+country_wikipedia = image_canvas.create_text(390, 445, width=610, font=('Courier', 10))
+
+# draw initial info bars
+population_bar = image_canvas.create_rectangle(300, 400, 700, 440, fill='red')
+gdp_bar = image_canvas.create_rectangle(300, 450, 700, 490, fill='red')
+area_bar = image_canvas.create_rectangle(300, 500, 700, 540, fill='red')
 
 # bind actions
 root.bind('<Motion>', motion)
