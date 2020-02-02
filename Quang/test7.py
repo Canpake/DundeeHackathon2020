@@ -34,6 +34,7 @@ def motion(event):
 
 
 current_wikipedia = ""
+c_trend = ""
 
 
 def left_click(event):
@@ -45,7 +46,7 @@ def left_click(event):
 
     country, facts, trends, flag_url = country_info.get_info(lat, lon)
 
-    global current_wikipedia
+    global current_wikipedia, c_trend
     if country == current_wikipedia:
         current_wikipedia = ""
         image_canvas.itemconfigure(country_wikipedia, anchor=tkinter.NW, text="")
@@ -53,6 +54,16 @@ def left_click(event):
         current_wikipedia = country
         sentences = str(wikipedia.summary(country, sentences=3))
         image_canvas.itemconfigure(country_wikipedia, anchor=tkinter.NW, text=sentences)
+
+    if (trends is not None and len(trends) > 0) and (c_trend != country):
+        trend_text = "Trends\n\n"
+        c_trend = country
+        for i in range (len(trends)):
+            trend_text += (trends[i] + '\n')
+        image_canvas.itemconfigure(country_trends, anchor=tkinter.SW, text=trend_text)
+    elif not trends or c_trend == country:
+        c_trend = ""
+        image_canvas.itemconfigure(country_trends, anchor=tkinter.SW, text= "")
 
 
 # updates on flag + country information
@@ -122,6 +133,7 @@ image_canvas.create_image(593, 304, image=world_map)
 country_text = image_canvas.create_text(10, 520, width=300, font=('Courier', 20, 'bold'))
 country_stats = image_canvas.create_text(10, 520, width=300, font=('Courier', 16))
 country_wikipedia = image_canvas.create_text(390, 445, width=610, font=('Courier', 11))
+country_trends = image_canvas.create_text(410, 220, width = 200, font = ("Courier", 12))
 
 
 # Test 4 upadte =======================

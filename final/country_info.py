@@ -84,4 +84,4 @@ def get_country_facts(country):
 # print(get_info(28.5, 77.2))
 # testing: Should return None
 # print(get_info(0, 0))
-print(rg.search([(57, -141)]))
+# print(rg.search([(57, -141)]))
