@@ -61,14 +61,19 @@ def left_click(event):
 
 def right_click(event):
     # draw a pin at the clicked location
-    image_canvas.create_image(event.x, event.y, image=pin)
+    pin_image = image_canvas.create_image(event.x, event.y, image=pin)
 
     # prompt for user entry to add text associated with the pin
     def set_pin_text():
-        pin_label = Label(image_canvas, text=pin_entry.get(), bg='gray')
-        pin_label.place(x=event.x, y=event.y + 20)
-        pin_entry.place_forget()
-        pin_button.place_forget()
+        if pin_entry.get():
+            pin_label = Label(image_canvas, text=pin_entry.get(), bg='gray')
+            pin_label.place(x=event.x, y=event.y + 20)
+            pin_entry.place_forget()
+            pin_button.place_forget()
+        else:   # if pin text is empty, then delete the pin and don't place a label
+            image_canvas.delete(pin_image)
+            pin_entry.place_forget()
+            pin_button.place_forget()
 
     # set entry + button
     pin_entry = Entry(image_canvas)
