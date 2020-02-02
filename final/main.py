@@ -8,6 +8,7 @@ from io import BytesIO
 import threading
 from time import sleep
 import sys
+import wikipedia
 
 
 # Constants for flag display
@@ -22,6 +23,7 @@ flag_url = "https://flagpedia.net/data/flags/normal/tg.png"     # default value 
 flag_image = None
 flag_update = True   # boolean flag for whether to update the flag
 facts = []
+current_wikipedia = None
 
 
 def motion(event):
@@ -38,7 +40,14 @@ def motion(event):
 
 
 def left_click(event):
-    pass
+    global current_wikipedia
+    if country == current_wikipedia:
+        current_wikipedia = None
+        image_canvas.itemconfigure(country_wikipedia, anchor=tkinter.NW, text="")
+    else:
+        current_wikipedia = country
+        sentences = str(wikipedia.summary(country, sentences=3))
+        image_canvas.itemconfigure(country_wikipedia, anchor=tkinter.NW, text=sentences)
 
 
 def right_click(event):
@@ -142,6 +151,7 @@ image_canvas.create_image(593, 304, image=world_map)
 # draw text
 country_text = image_canvas.create_text(10, 520, width=300, font=('Courier', 20, 'bold'))
 country_stats = image_canvas.create_text(10, 520, width=300, font=('Courier', 16))
+country_wikipedia = image_canvas.create_text(390, 445, width=610, font=('Courier', 10))
 
 # draw initial info bars
 population_bar = image_canvas.create_rectangle(300, 400, 700, 440, fill='red')
