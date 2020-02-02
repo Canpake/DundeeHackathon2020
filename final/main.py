@@ -10,7 +10,6 @@ from time import sleep
 import sys
 import wikipedia
 
-
 # Constants for flag display
 FLAG_SCALE = 0.1
 FLAG_OFFSET = (30, 15)
@@ -19,15 +18,16 @@ x = 0
 y = 0
 country = None
 flag = None
-flag_url = "https://flagpedia.net/data/flags/normal/tg.png"     # default value for flag to begin with
+trends = None
+flag_url = "https://flagpedia.net/data/flags/normal/tg.png"  # default value for flag to begin with
 flag_image = None
-flag_update = True   # boolean flag for whether to update the flag
+flag_update = True  # boolean flag for whether to update the flag
 facts = []
-current_wikipedia = None
+current_country = None
 
 
 def motion(event):
-    global x, y, country, facts, flag_url
+    global x, y, country, facts, trends, flag_url
     x, y = event.x, event.y
     lon = (x - 184) * 302 / 939 - 124
     lat = -(y) * 180 / 609 + 90
@@ -40,14 +40,23 @@ def motion(event):
 
 
 def left_click(event):
-    global current_wikipedia
-    if country == current_wikipedia:
-        current_wikipedia = None
-        image_canvas.itemconfigure(country_wikipedia, anchor=tkinter.NW, text="")
-    else:
-        current_wikipedia = country
+    global current_country, trends
+    if country == current_country:
+        # if clicking on the same country as previously, both trends + wikipedia
+        current_country = None
+        image_canvas.itemconfigure(country_trends, anchor=tkinter.SW, text="")
+        image_canvas.itemconfigure(country_wikipedia, anchor=tkinter.SW, text="")
+    elif trends is not None and len(trends) > 0:
+        # get trend text
+        trend_text = "Trends\n\n"
+        for i in range(len(trends)):
+            trend_text += (trends[i] + '\n')
+        # get wikipedia text
+        current_country = country
         sentences = str(wikipedia.summary(country, sentences=3))
-        image_canvas.itemconfigure(country_wikipedia, anchor=tkinter.NW, text=sentences)
+
+        image_canvas.itemconfigure(country_trends, anchor=tkinter.SW, text=trend_text)
+        image_canvas.itemconfigure(country_wikipedia, anchor=tkinter.SW, text=sentences)
 
 
 def right_click(event):
@@ -57,16 +66,16 @@ def right_click(event):
     # prompt for user entry to add text associated with the pin
     def set_pin_text():
         pin_label = Label(image_canvas, text=pin_entry.get(), bg='gray')
-        pin_label.place(x=event.x, y=event.y+20)
+        pin_label.place(x=event.x, y=event.y + 20)
         pin_entry.place_forget()
         pin_button.place_forget()
 
     # set entry + button
     pin_entry = Entry(image_canvas)
-    pin_entry.place(x=event.x+10, y=event.y+10)
+    pin_entry.place(x=event.x + 10, y=event.y + 10)
 
     pin_button = Button(image_canvas, text="set", width=6, command=set_pin_text)
-    pin_button.place(x=event.x+10, y=event.y+40)
+    pin_button.place(x=event.x + 10, y=event.y + 40)
 
 
 # updates on flag + country information
@@ -80,14 +89,17 @@ def update():
         try:
             # get image size + resize
             width, height = Image.open(BytesIO(img_data)).size
-            flag_image = ImageTk.PhotoImage(Image.open(BytesIO(img_data)).resize((int(width*FLAG_SCALE), int(height*FLAG_SCALE)), Image.ANTIALIAS))
+            flag_image = ImageTk.PhotoImage(
+                Image.open(BytesIO(img_data)).resize((int(width * FLAG_SCALE), int(height * FLAG_SCALE)),
+                                                     Image.ANTIALIAS))
         except PIL.UnidentifiedImageError:
             # hard-coded resize; no_flag is 550x350px.
-            flag_image = ImageTk.PhotoImage(Image.open("../images/no_flag.png").resize((int(550*FLAG_SCALE), int(350*FLAG_SCALE))))
+            flag_image = ImageTk.PhotoImage(
+                Image.open("../images/no_flag.png").resize((int(550 * FLAG_SCALE), int(350 * FLAG_SCALE))))
 
         # redraw flag at cursor location
         image_canvas.delete(flag)
-        flag = image_canvas.create_image(x+FLAG_OFFSET[0], y+FLAG_OFFSET[1], anchor=tkinter.NW, image=flag_image)
+        flag = image_canvas.create_image(x + FLAG_OFFSET[0], y + FLAG_OFFSET[1], anchor=tkinter.NW, image=flag_image)
 
         # redraw country text
         image_canvas.itemconfigure(country_text, anchor=tkinter.SW, text=country)
@@ -108,9 +120,9 @@ def update():
             if len(facts) == 3:
                 update_progress_bar(int(facts[0]), int(facts[1].split()[0]), int(facts[2].split(" ")[0]))
             else:
-                update_progress_bar(0,0,0)
+                update_progress_bar(0, 0, 0)
         except ValueError:
-            update_progress_bar(0,0,0)
+            update_progress_bar(0, 0, 0)
             continue
 
         sleep(0.01)
@@ -123,9 +135,9 @@ def update_progress_bar(population, gdp, area):
     image_canvas.delete(population_bar)
     image_canvas.delete(gdp_bar)
     image_canvas.delete(area_bar)
-    population_bar = image_canvas.create_rectangle(10, 460*(1 - population/1409517000) + 10, 30, 470, fill='red')
-    gdp_bar = image_canvas.create_rectangle(40, 460*(1 - gdp/18036648) + 10, 60, 470, fill='blue')
-    area_bar = image_canvas.create_rectangle(70, 460*(1 - area/17098246) + 10, 90, 470, fill='green')
+    population_bar = image_canvas.create_rectangle(10, 460 * (1 - population / 1409517000) + 10, 30, 470, fill='red')
+    gdp_bar = image_canvas.create_rectangle(40, 460 * (1 - gdp / 18036648) + 10, 60, 470, fill='blue')
+    area_bar = image_canvas.create_rectangle(70, 460 * (1 - area / 17098246) + 10, 90, 470, fill='green')
 
 
 def on_closing():
@@ -149,9 +161,17 @@ pin = ImageTk.PhotoImage(Image.open("../images/pin.png").resize((20, 30)))
 image_canvas.create_image(593, 304, image=world_map)
 
 # draw text
-country_text = image_canvas.create_text(10, 520, width=300, font=('Courier', 20, 'bold'))
-country_stats = image_canvas.create_text(10, 520, width=300, font=('Courier', 16))
-country_wikipedia = image_canvas.create_text(390, 445, width=610, font=('Courier', 10))
+country_text = image_canvas.create_text(10, 540, width=300, font=('Courier', 20, 'bold'))
+country_stats = image_canvas.create_text(10, 540, width=300, font=('Courier', 16))
+country_wikipedia = image_canvas.create_text(350, 550, width=610, font=('Courier', 10))
+country_trends = image_canvas.create_text(410, 220, width=200, font=("Courier", 12))
+
+# # draw rectangles around text
+# image_canvas.create_rectangle(350, 500, 1000, 600,
+#     outline='black', width="2"
+#     fill='gray',  # still needed or stipple won't work
+#     stipple='gray25',
+# )
 
 # draw initial info bars
 population_bar = image_canvas.create_rectangle(300, 400, 700, 440, fill='red')
@@ -171,4 +191,3 @@ a.start()
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
 root.mainloop()
-
