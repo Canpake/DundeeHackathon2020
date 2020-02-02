@@ -1,18 +1,23 @@
 import tkinter
 from tkinter import Tk, Frame, Canvas, PhotoImage
 from final import country_info
+import PIL
 from PIL import ImageTk, Image
 import requests
 from io import BytesIO
 import threading
 from time import sleep
 
+
+# Constants for flag display
+FLAG_SCALE = 0.1
+FLAG_OFFSET = (30, 15)
+
 x = 0
 y = 0
 flag = None
-flag_url = "https://flagpedia.net/data/flags/normal/tg.png"
-flag_canvas = None
-pin_locations = []
+flag_url = "https://flagpedia.net/data/flags/normal/tg.png"     # default value for flag to begin with
+flag_image = None
 
 def motion(event):
     global x, y, flag_url
@@ -27,58 +32,44 @@ def motion(event):
 
 
 def right_click(event):
-    print("right click")
-    global pin_locations
-    pin_locations.append((event.x, event.y))
-    # doesn't work, yikes
-    # pin = ImageTk.PhotoImage(file="../images/pin.png")
-    # pin_canvas = Canvas(root, bg="blue", width=80, height=120)
-    # pin_canvas.create_image(event.x, event.y, image=pin)
-    # pin_canvas.place(x=event.x, y=event.y)
-    #
-    # pin_canvas = Canvas(root, width=80, height=120)
-    # pin_canvas.place(x=100, y=100)
-    #
-    # pin = ImageTk.PhotoImage(file="../images/pin.png")
-    # pin_canvas.create_image(40, 60, image=pin)
+    # draw a pin at the clicked location
+    image_canvas.create_image(event.x, event.y, image=pin)
 
 
 def update():
     while True:
-        # set flag url
-        global flag_url
+        # find flag image from url
+        global flag, flag_url, flag_image
         response = requests.get(flag_url)
         img_data = response.content
 
-        # find flag image (and resize)
-        global flag
+        # get flag image + resize
         try:
-            current = ImageTk.PhotoImage(Image.open(BytesIO(img_data)).resize((int(550/10), int(367/10)), Image.ANTIALIAS))
-        except:
-            continue
-        flag = current
+            width, height = Image.open(BytesIO(img_data)).size
+            flag_image = ImageTk.PhotoImage(Image.open(BytesIO(img_data)).resize((int(width*FLAG_SCALE), int(height*FLAG_SCALE)), Image.ANTIALIAS))
+        except PIL.UnidentifiedImageError:
+            # hard-coded resize; no_flag is 550x275px.
+            flag_image = ImageTk.PhotoImage(Image.open("../images/no_flag.png").resize((int(550*FLAG_SCALE), int(275*FLAG_SCALE))))
 
-        pin = ImageTk.PhotoImage(Image.open("../images/pin.png").resize((20, 30)))
+        # redraw flag
+        image_canvas.delete(flag)
+        flag = image_canvas.create_image(x+FLAG_OFFSET[0], y+FLAG_OFFSET[1], anchor=tkinter.NW, image=flag_image)
 
-        # redraw map + flag + pins
-        image_canvas.delete("all")
-        image_canvas.create_image(0, 0, anchor=tkinter.NW, image=world_map)
-
-        global flag_canvas
-        flag_canvas = image_canvas.create_image(x+30, y+15, anchor=tkinter.NW, image=flag)
-        # draw each pin
-        for (pin_x, pin_y) in pin_locations:
-            image_canvas.create_image(pin_x, pin_y, anchor=tkinter.NW, image=pin)
         sleep(0.01)
 
 
 root = Tk()
 root.geometry("1186x609")
 
-# set up canvas + load initial images
+# set up canvas
 image_canvas = Canvas(root, bg="blue", width=1186, height=609)
 image_canvas.place(relx=0, rely=0)
+
+# load up initial images
 world_map = ImageTk.PhotoImage(Image.open("../images/world_map.png"))
+pin = ImageTk.PhotoImage(Image.open("../images/pin.png").resize((20, 30)))
+
+# draw map
 image_canvas.create_image(593, 304, image=world_map)
 
 # bind actions
