@@ -1,5 +1,5 @@
 import tkinter
-from tkinter import Tk, Entry, Canvas
+from tkinter import Tk, Canvas, Entry, Button, Label
 from final import country_info
 import PIL
 from PIL import ImageTk, Image
@@ -21,6 +21,7 @@ flag_url = "https://flagpedia.net/data/flags/normal/tg.png"     # default value 
 flag_image = None
 flag_update = True   # boolean flag for whether to update the flag
 
+
 def motion(event):
     global x, y, flag_url
     x, y = event.x, event.y
@@ -29,6 +30,7 @@ def motion(event):
 
     country, facts, trends, flag_url = country_info.get_info(lat, lon)
 
+    # debug
     # print(lat, lon)
     # print(country, facts, trends, flag_url)
 
@@ -36,7 +38,20 @@ def motion(event):
 def right_click(event):
     # draw a pin at the clicked location
     image_canvas.create_image(event.x, event.y, image=pin)
+
     # prompt for user entry to add text associated with the pin
+    def set_pin_text():
+        pin_label = Label(image_canvas, text=pin_entry.get(), bg='gray')
+        pin_label.place(x=event.x, y=event.y+20)
+        pin_entry.place_forget()
+        pin_button.place_forget()
+
+    # set entry + button
+    pin_entry = Entry(image_canvas)
+    pin_entry.place(x=event.x+10, y=event.y+10)
+
+    pin_button = Button(image_canvas, text="set", width=6, command=set_pin_text)
+    pin_button.place(x=event.x+10, y=event.y+40)
 
 
 def update():
@@ -54,11 +69,10 @@ def update():
             # hard-coded resize; no_flag is 550x275px.
             flag_image = ImageTk.PhotoImage(Image.open("../images/no_flag.png").resize((int(550*FLAG_SCALE), int(275*FLAG_SCALE))))
 
-        # redraw flag
+        # redraw flag at cursor location
         image_canvas.delete(flag)
         flag = image_canvas.create_image(x+FLAG_OFFSET[0], y+FLAG_OFFSET[1], anchor=tkinter.NW, image=flag_image)
 
-        print(flag_update)
         sleep(0.01)
     return
 
