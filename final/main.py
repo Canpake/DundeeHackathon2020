@@ -235,4 +235,5 @@ threads.append(a)
 a.start()
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
+root.resizable (False, False)
 root.mainloop()
