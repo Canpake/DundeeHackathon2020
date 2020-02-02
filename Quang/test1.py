@@ -75,7 +75,7 @@ root.bind("<Button-2>", right_click)
 
 # multithreading on flag loading
 threads = []
-a = threading.Thread(target=update)
+a = threading.Thread(target=flag_update)
 threads.append(a)
 a.start()
 

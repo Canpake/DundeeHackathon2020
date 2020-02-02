@@ -64,7 +64,7 @@ def motion(event):
 root.bind('<Motion>', motion)
 
 threads = []
-a = threading.Thread(target=update)
+a = threading.Thread(target=flag_update)
 threads.append(a)
 a.start()
 # this creates the loop that makes the window stay 'active'

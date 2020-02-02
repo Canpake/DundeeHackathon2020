@@ -1,5 +1,5 @@
 import tkinter
-from tkinter import Tk, Frame, Canvas, PhotoImage
+from tkinter import Tk, Entry, Canvas
 from final import country_info
 import PIL
 from PIL import ImageTk, Image
@@ -7,6 +7,7 @@ import requests
 from io import BytesIO
 import threading
 from time import sleep
+import sys
 
 
 # Constants for flag display
@@ -18,6 +19,7 @@ y = 0
 flag = None
 flag_url = "https://flagpedia.net/data/flags/normal/tg.png"     # default value for flag to begin with
 flag_image = None
+flag_update = True   # boolean flag for whether to update the flag
 
 def motion(event):
     global x, y, flag_url
@@ -34,17 +36,18 @@ def motion(event):
 def right_click(event):
     # draw a pin at the clicked location
     image_canvas.create_image(event.x, event.y, image=pin)
+    # prompt for user entry to add text associated with the pin
 
 
 def update():
-    while True:
+    while flag_update:
         # find flag image from url
         global flag, flag_url, flag_image
         response = requests.get(flag_url)
         img_data = response.content
 
-        # get flag image + resize
         try:
+            # get image size + resize
             width, height = Image.open(BytesIO(img_data)).size
             flag_image = ImageTk.PhotoImage(Image.open(BytesIO(img_data)).resize((int(width*FLAG_SCALE), int(height*FLAG_SCALE)), Image.ANTIALIAS))
         except PIL.UnidentifiedImageError:
@@ -55,7 +58,15 @@ def update():
         image_canvas.delete(flag)
         flag = image_canvas.create_image(x+FLAG_OFFSET[0], y+FLAG_OFFSET[1], anchor=tkinter.NW, image=flag_image)
 
+        print(flag_update)
         sleep(0.01)
+    return
+
+
+def on_closing():
+    global flag_update
+    flag_update = False
+    sys.exit()
 
 
 root = Tk()
@@ -82,5 +93,6 @@ a = threading.Thread(target=update)
 threads.append(a)
 a.start()
 
+root.protocol("WM_DELETE_WINDOW", on_closing)
 root.mainloop()
 
